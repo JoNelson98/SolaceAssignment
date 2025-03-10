@@ -18,9 +18,9 @@ export default function Pagination({
     }
 
     return (
-        <div style={{ marginTop: "16px" }}>
+        <div className="flex m-4 justify-center">
             {page > 1 && (
-                <button style={{ marginRight: "8px" }} onClick={() => goToPage(page - 1)}>
+                <button className="mr-2" onClick={() => goToPage(page - 1)}>
                     Previous
                 </button>
             )}
