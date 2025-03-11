@@ -19,14 +19,14 @@ export async function getAdvocates(search: string, page: number, limit: number) 
         )
     }
 
-    let baseQuery = db.select().from(advocates) as any
+    let baseQuery = db.select().from(advocates)
     if (searchConditions) {
         baseQuery = baseQuery.where(searchConditions)
     }
 
     const data = await baseQuery.limit(limit).offset(offset).orderBy(advocates.id)
 
-    let totalQuery = db.select({ total: count() }).from(advocates) as any
+    let totalQuery = db.select({ total: count() }).from(advocates)
     if (searchConditions) {
         totalQuery = totalQuery.where(searchConditions)
     }
