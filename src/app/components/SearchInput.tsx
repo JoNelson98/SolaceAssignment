@@ -1,16 +1,15 @@
 "use client"
 
-import { useRouter } from "next/navigation"
-import { useState } from "react"
-
-export default function SearchInput({ initialSearch }: { initialSearch: string }) {
-    const [search, setSearch] = useState(initialSearch)
-    const router = useRouter()
-
+export default function SearchInput({
+    search,
+    setSearch,
+}: {
+    search: string
+    setSearch: (search: string) => void
+}) {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newSearch = e.target.value
         setSearch(newSearch)
-        router.push(`/?search=${encodeURIComponent(newSearch)}&page=1`)
     }
 
     return (
@@ -21,9 +20,7 @@ export default function SearchInput({ initialSearch }: { initialSearch: string }
                 onChange={handleChange}
                 placeholder="Search advocates..."
             />
-            <span className="duration-500 opacity-0 mb-2 peer-focus:opacity-100 text-gray-500 text-xs -translate-y-12 peer-focus:translate-y-0">
-                Search
-            </span>
+            <span className="duration-500 opacity-0 ">Search</span>
         </div>
     )
 }

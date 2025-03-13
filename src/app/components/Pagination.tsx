@@ -1,22 +1,20 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { RightArrow, LeftArrow } from "./Icons"
 
 export default function Pagination({
     page,
     totalPages,
-    search,
+    setPage,
 }: {
     page: number
     totalPages: number
-    search: string
+    setPage: (page: number) => void
 }) {
-    const router = useRouter()
-
     const goToPage = (newPage: number) => {
-        router.push(`/?search=${encodeURIComponent(search)}&page=${newPage}`)
+        setPage(newPage)
     }
+
     return (
         <div className="flex m-4 justify-center">
             {page > 1 && (

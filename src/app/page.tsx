@@ -1,15 +1,31 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import SearchInput from "@/components/SearchInput"
 import Pagination from "@/components/Pagination"
-import { getAdvocates } from "../db/queries"
-import { Advocate } from "./lib/types"
 import { MotionSection } from "@/components/layout/MotionSection"
+import { Advocate } from "./lib/types"
 
-export default async function Home({ searchParams }: { searchParams: { search?: string; page?: string } }) {
-    const search = searchParams.search || ""
-    const page = parseInt(searchParams.page || "1", 10)
-    const limit = 5
+export default function Home() {
+    const [search, setSearch] = useState("")
+    const [page, setPage] = useState(1)
+    const [limit] = useState(5)
+    const [advocates, setAdvocates] = useState([])
+    const [total, setTotal] = useState(0)
 
-    const { data: advocates, total } = await getAdvocates(search, page, limit)
+    useEffect(() => {
+        const fetchAdvocates = async () => {
+            const response = await fetch(
+                `/api/advocates?search=${encodeURIComponent(search)}&page=${page}&limit=${limit}`,
+            )
+            const { data, total } = await response.json()
+            setAdvocates(data)
+            setTotal(total)
+        }
+
+        fetchAdvocates()
+    }, [search, page, limit])
+
     const totalPages = Math.ceil(total / limit)
 
     return (
@@ -32,11 +48,10 @@ export default async function Home({ searchParams }: { searchParams: { search?: 
                 </MotionSection>
             </div>
             <MotionSection delay={0.6}>
-                <SearchInput initialSearch={search} />
+                <SearchInput search={search} setSearch={setSearch} />
             </MotionSection>
             <MotionSection delay={0.7}>
-                <Pagination page={page} totalPages={totalPages} search={search} />
-
+                <Pagination page={page} totalPages={totalPages} setPage={setPage} />
                 {advocates.length > 0 ? (
                     <div className="rounded-xl shadow-lg overflow-hidden bg-white">
                         <table className="w-full table-auto">
@@ -46,45 +61,27 @@ export default async function Home({ searchParams }: { searchParams: { search?: 
                             </caption>
                             <thead>
                                 <tr className="m-0 border-t p-0 even:bg-muted bg-slate-100">
-                                    <th className="border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right">
-                                        First Name
-                                    </th>
-                                    <th className="border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right">
-                                        Last Name
-                                    </th>
-                                    <th className="border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right">
-                                        City
-                                    </th>
-                                    <th className="border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right">
-                                        Degree
-                                    </th>
-                                    <th className="border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right">
-                                        Specialties
-                                    </th>
-                                    <th className="border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right">
+                                    <th className="border px-4 py-2 text-left font-bold ">First Name</th>
+                                    <th className="border px-4 py-2 text-left font-bold ">Last Name</th>
+                                    <th className="border px-4 py-2 text-left font-bold ">City</th>
+                                    <th className="border px-4 py-2 text-left font-bold ">Degree</th>
+                                    <th className="border px-4 py-2 text-left font-bold">Specialties</th>
+                                    <th className="border px-4 py-2 text-left font-bold ">
                                         Years of Experience
                                     </th>
-                                    <th className="border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right">
-                                        Phone Number
-                                    </th>
+                                    <th className="border px-4 py-2 text-left font-bold ">Phone Number</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {advocates.map((advocate: Advocate) => (
                                     <tr className="m-0 border-t p-0 even:bg-muted" key={advocate.id}>
-                                        <td className="border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right">
+                                        <td className="border px-4 py-2 text-left ">
                                             {advocate.firstName}
                                         </td>
-                                        <td className="border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right">
-                                            {advocate.lastName}
-                                        </td>
-                                        <td className="border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right">
-                                            {advocate.city}
-                                        </td>
-                                        <td className="border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right">
-                                            {advocate.degree}
-                                        </td>
-                                        <td className="border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right max-h-20 overflow-y-auto">
+                                        <td className="border px-4 py-2 text-left ">{advocate.lastName}</td>
+                                        <td className="border px-4 py-2 text-left">{advocate.city}</td>
+                                        <td className="border px-4 py-2 text-left">{advocate.degree}</td>
+                                        <td className="border px-4 py-2 text-left  max-h-20 overflow-y-auto">
                                             <div className="max-h-20 overflow-hidden text-clip">
                                                 {advocate.specialties.map((s: string) => (
                                                     <div key={s} className="truncate">
